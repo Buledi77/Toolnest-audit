@@ -1,0 +1,16 @@
+# Local Netlify folder
+.netlify
+
+# Cloudflare / Wrangler local dev and deploy files
+.wrangler/
+worker.js
+wrangler.jsonc
+
+# Local build/audit notes and old backups
+BUILD-AUDIT.txt
+index-before-ai.html
+
+# OS / editor junk
+desktop.ini
+Thumbs.db
+.DS_Store

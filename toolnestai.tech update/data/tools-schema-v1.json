@@ -1,0 +1,923 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://toolnest.example/schemas/tools-schema-v1.json",
+  "title": "ToolNest canonical tool dataset (v1)",
+  "description": "Schema and specification for the future canonical ToolNest tool dataset. It preserves every field currently present in data/tools.json and adds the fields needed to generate pages, comparisons, schema markup, sitemap entries and internal links from one record. Unknown facts must be null or an empty list; they must never be guessed. This file is a specification only: data/tools.json is intentionally unchanged and does not yet validate against it.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "source",
+    "count",
+    "tools"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "1",
+      "description": "Version of this canonical dataset schema."
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Provenance of the dataset, for example 'ToolNest canonical dataset generated from data/content/*.json'."
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of records in tools[]. Must equal tools.length."
+    },
+    "tools": {
+      "type": "array",
+      "description": "One record per tool. This array is the single source of truth for cards, directory, category pages, comparisons, alternatives, best-of lists, goal mappings, JSON-LD, sitemap and redirects.",
+      "items": {
+        "$ref": "#/$defs/tool"
+      }
+    }
+  },
+  "x-existing-dataset": {
+    "path": "data/tools.json",
+    "count": 50,
+    "fields": [
+      "id",
+      "name",
+      "cat",
+      "h",
+      "site",
+      "badge",
+      "featured",
+      "best",
+      "pros",
+      "logo",
+      "affiliateUrl"
+    ],
+    "note": "The current file is an extract of the homepage array and is read-only for this step. Its 11 fields are all preserved in the schema below."
+  },
+  "x-legacy-field-map": {
+    "id": {
+      "path": "tools[].id",
+      "note": "Primary key and URL slug. Unchanged meaning; now validated as a slug."
+    },
+    "name": {
+      "path": "tools[].name",
+      "note": "Display name. Unchanged."
+    },
+    "cat": {
+      "path": "tools[].cat",
+      "note": "Legacy display label. Kept verbatim for backward compatibility. The canonical taxonomy is tools[].category."
+    },
+    "h": {
+      "path": "tools[].h",
+      "note": "Legacy card hue value. Kept verbatim; documented here as a 0-360 hue."
+    },
+    "site": {
+      "path": "tools[].site",
+      "note": "Official website URL. Unchanged."
+    },
+    "badge": {
+      "path": "tools[].badge",
+      "note": "Legacy card badge. Empty string means no badge. Featured status is owned by tools[].featured."
+    },
+    "featured": {
+      "path": "tools[].featured",
+      "note": "Legacy boolean. Kept; should become the only source of featured status."
+    },
+    "best": {
+      "path": "tools[].best",
+      "note": "Legacy one-line positioning statement. Kept for card and summary use. Structured fit guidance lives in bestFor and skipIf."
+    },
+    "pros": {
+      "path": "tools[].pros",
+      "note": "Legacy array of short pro strings. Kept. Canonical pros remain here; cons is the new matching field."
+    },
+    "logo": {
+      "path": "tools[].logo",
+      "note": "Site-relative logo path or absolute URL. Unchanged."
+    },
+    "affiliateUrl": {
+      "path": "tools[].affiliateUrl",
+      "note": "Legacy affiliate URL. Empty string means none. Kept for backward compatibility; affiliate.status and affiliate.url own canonical affiliate state."
+    }
+  },
+  "x-category-labels-observed": [
+    "AI Assistants",
+    "Automation",
+    "Design",
+    "Email Marketing",
+    "Hosting",
+    "Image Generation",
+    "Marketing",
+    "Productivity",
+    "Research",
+    "SEO",
+    "Sales",
+    "Voice & Video",
+    "Website Builder",
+    "Writing"
+  ],
+  "x-category-slug-note": "These 14 labels are the only category labels observed in data/tools.json. Their slugs are intentionally not guessed here. The label-to-slug mapping will be defined during migration and must be one-to-one and stable.",
+  "x-placeholder-conventions": {
+    "null": "Fact not yet verified, not yet written, or not applicable. Never guess a value.",
+    "[]": "List not yet populated. Never invent entries to fill it.",
+    "\"\"": "Legacy empty string used by badge and affiliateUrl to mean 'none'.",
+    "\"TODO: ...\"": "Human-authored text slot. Must be replaced before contentStatus.status becomes 'published'.",
+    "\"example-*\"": "Synthetic values used only inside x-record-template. They are not real tools, categories or URLs."
+  },
+  "x-content-bar": {
+    "note": "Targets for a record whose contentStatus.status is 'published'. They are guidance, not JSON Schema constraints, so incomplete records can still be stored as drafts.",
+    "pros_min": 3,
+    "cons_min": 3,
+    "bestFor_min": 1,
+    "skipIf_min": 1,
+    "sources_min": 2,
+    "pricing": "At least one tier, or explicit freePlan.available plus freePlan.limits, or an explicit null with a reason in notes.",
+    "lastVerified": "Required ISO date before publishing.",
+    "shortDescription": "One or two sentences, unique to the tool."
+  },
+  "x-migration-note": "data/tools.json is not modified in this step and does not yet validate against this schema. It lacks schemaVersion, category, shortDescription, pricing, cons, bestFor, skipIf, platforms, integrations, useCaseTags, sources, lastVerified, affiliate, alternatives, comparisons, goals and contentStatus. Migration to this shape is a later phase.",
+  "x-record-template": {
+    "id": "example-tool",
+    "name": "Example Tool (placeholder)",
+    "cat": "Example Category",
+    "category": {
+      "label": "Example Category",
+      "slug": "example-category"
+    },
+    "h": 0,
+    "site": "https://example.com",
+    "badge": "",
+    "featured": false,
+    "best": "TODO: one-line positioning statement",
+    "pros": [],
+    "logo": "/assets/logos/example-tool.png",
+    "affiliateUrl": "",
+    "shortDescription": null,
+    "pricing": {
+      "model": null,
+      "currency": null,
+      "tiers": [],
+      "freePlan": {
+        "available": null,
+        "limits": [],
+        "notes": null
+      },
+      "lastChecked": null,
+      "sourceRefs": []
+    },
+    "cons": [],
+    "bestFor": [],
+    "skipIf": [],
+    "platforms": [],
+    "integrations": [],
+    "useCaseTags": [],
+    "sources": [],
+    "lastVerified": null,
+    "affiliate": {
+      "status": "unknown",
+      "url": "",
+      "network": null,
+      "disclosureRequired": null,
+      "lastVerified": null
+    },
+    "alternatives": [],
+    "comparisons": [],
+    "goals": [],
+    "contentStatus": {
+      "status": "draft",
+      "pagePath": null,
+      "reviewer": null,
+      "lastReviewed": null,
+      "wordCount": null,
+      "notes": null
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Lowercase kebab-case identifier."
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO 8601 calendar date, for example 2026-11-11."
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "bestFor": {
+      "type": "array",
+      "description": "Concrete users, jobs or situations the tool is a good fit for. Human-written, tool-specific. Empty until researched.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "skipIf": {
+      "type": "array",
+      "description": "Concrete reasons a reader should not choose this tool. Must be reasoned per tool, never generated by inverting another tool's description. Empty until researched.",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "category": {
+      "type": "object",
+      "description": "Canonical taxonomy for the tool. label is for display, slug is for URLs and data joins.",
+      "required": [
+        "label",
+        "slug"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Display label, for example 'Website Builder'."
+        },
+        "slug": {
+          "$ref": "#/$defs/slug",
+          "description": "Stable category slug used in /category/{slug} URLs and joins."
+        }
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "description": "Pricing summary sourced from official pages. Use null and empty lists when unverified; never guess prices.",
+      "required": [
+        "model",
+        "currency",
+        "tiers",
+        "freePlan",
+        "lastChecked",
+        "sourceRefs"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "free",
+            "freemium",
+            "paid",
+            "subscription",
+            "usage-based",
+            "one-time",
+            "enterprise",
+            "unknown",
+            null
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code, for example USD. Null when prices are not recorded."
+        },
+        "tiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pricingTier"
+          }
+        },
+        "freePlan": {
+          "$ref": "#/$defs/freePlan"
+        },
+        "lastChecked": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Date the pricing was last checked against the official source."
+        },
+        "sourceRefs": {
+          "type": "array",
+          "description": "Official pricing page URLs or source titles that support the recorded prices.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "pricingTier": {
+      "type": "object",
+      "description": "One published plan or price point.",
+      "required": [
+        "name",
+        "price",
+        "billingPeriod",
+        "priceDisplay",
+        "limits",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Plan name as published, for example 'Pro'."
+        },
+        "price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Numeric price in pricing.currency. Null when the plan is custom or unverified."
+        },
+        "billingPeriod": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "month",
+            "year",
+            "one-time",
+            "usage",
+            "custom",
+            "unknown",
+            null
+          ]
+        },
+        "priceDisplay": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Price exactly as shown by the vendor, for example '$20/mo billed annually'."
+        },
+        "limits": {
+          "type": "array",
+          "description": "Plan-specific limits such as seats, credits, projects or exports.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Interpretation or caveats. Human-written; never invented."
+        }
+      }
+    },
+    "freePlan": {
+      "type": "object",
+      "description": "Free-plan availability and limits. available is null when unverified, false when the vendor has no free plan, true when one exists.",
+      "required": [
+        "available",
+        "limits",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "available": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "limits": {
+          "type": "array",
+          "description": "Concrete free-plan limits such as monthly credits, watermarking, seat count or feature locks.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "description": "An official or primary source used to verify facts on the tool page.",
+      "required": [
+        "title",
+        "url",
+        "publisher",
+        "accessed",
+        "official"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "publisher": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "official": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "True when the source is the vendor's own site or documentation."
+        }
+      }
+    },
+    "affiliate": {
+      "type": "object",
+      "description": "Canonical affiliate state. status is explicit so pages can disclose correctly and never imply a partnership that does not exist.",
+      "required": [
+        "status",
+        "url",
+        "network",
+        "disclosureRequired",
+        "lastVerified"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "none",
+            "pending",
+            "active",
+            "expired",
+            "unknown"
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "string",
+              "maxLength": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Affiliate destination. Empty string or null when status is not active."
+        },
+        "network": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Affiliate network or program name, if any."
+        },
+        "disclosureRequired": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "lastVerified": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "alternative": {
+      "type": "object",
+      "description": "One alternative a reader might switch to. reason and tradeoff must be written per pair.",
+      "required": [
+        "toolId",
+        "reason",
+        "tradeoff",
+        "rank"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "toolId": {
+          "$ref": "#/$defs/slug",
+          "description": "id of another record in tools[]."
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Why this tool is a credible alternative."
+        },
+        "tradeoff": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "What the reader gives up by switching."
+        },
+        "rank": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "description": "Display order, 1 first."
+        }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "description": "A comparison relationship. The slug is the single canonical URL; direction records how this pair is presented so reverse duplicates are not generated.",
+      "required": [
+        "withToolId",
+        "slug",
+        "direction",
+        "status",
+        "lastVerified"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "withToolId": {
+          "$ref": "#/$defs/slug",
+          "description": "id of the other tool in the comparison."
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*-vs-[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "description": "Canonical comparison slug, for example 'notion-vs-asana'."
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "forward",
+            "reverse",
+            "bidirectional",
+            "unknown"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "published",
+            "needs-update",
+            "deprecated"
+          ]
+        },
+        "lastVerified": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "goalMapping": {
+      "type": "object",
+      "description": "Maps a tool to a reader goal so goal guides and the finder can be generated from data.",
+      "required": [
+        "goalId",
+        "goalLabel",
+        "fit",
+        "rationale"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "goalId": {
+          "$ref": "#/$defs/slug",
+          "description": "Stable goal identifier used for joins and URLs."
+        },
+        "goalLabel": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Human-readable goal, for example 'Write better emails'."
+        },
+        "fit": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "secondary",
+            "not-recommended",
+            "unknown"
+          ]
+        },
+        "rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Why the tool fits or does not fit the goal. Human-written."
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "description": "Content and review state for the tool's review page. Keeps review claims per tool instead of one blanket site-wide date.",
+      "required": [
+        "status",
+        "pagePath",
+        "reviewer",
+        "lastReviewed",
+        "wordCount",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "in-review",
+            "published",
+            "needs-update",
+            "deprecated"
+          ]
+        },
+        "pagePath": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Site-relative review page path, for example '/tools/notion.html'."
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastReviewed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "wordCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "description": "One canonical tool record. Legacy fields are kept under their existing names; new fields are additive. Every key must be present, but unknown facts are expressed as null or an empty list.",
+      "required": [
+        "id",
+        "name",
+        "cat",
+        "category",
+        "h",
+        "site",
+        "badge",
+        "featured",
+        "best",
+        "pros",
+        "logo",
+        "affiliateUrl",
+        "shortDescription",
+        "pricing",
+        "cons",
+        "bestFor",
+        "skipIf",
+        "platforms",
+        "integrations",
+        "useCaseTags",
+        "sources",
+        "lastVerified",
+        "affiliate",
+        "alternatives",
+        "comparisons",
+        "goals",
+        "contentStatus"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug",
+          "description": "Primary key and URL slug. Preserved from the current dataset."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Display name. Preserved from the current dataset."
+        },
+        "cat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Legacy display label. Preserved verbatim for backward compatibility; canonical taxonomy is category."
+        },
+        "category": {
+          "$ref": "#/$defs/category"
+        },
+        "h": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 360,
+          "description": "Legacy card hue, 0-360. Preserved from the current dataset and now documented."
+        },
+        "site": {
+          "type": "string",
+          "format": "uri",
+          "description": "Official website URL. Preserved from the current dataset."
+        },
+        "badge": {
+          "type": "string",
+          "description": "Legacy card badge. Empty string means no badge. Preserved from the current dataset."
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Featured flag. Preserved from the current dataset; should become the only source of featured status."
+        },
+        "best": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Legacy one-line positioning statement. Preserved from the current dataset."
+        },
+        "pros": {
+          "type": "array",
+          "description": "Pros. Preserved from the current dataset; target at least 3 for published records.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "logo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Site-relative logo path or absolute URL. Preserved from the current dataset."
+        },
+        "affiliateUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "string",
+              "maxLength": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Legacy affiliate URL. Empty string or null means none. Preserved from the current dataset; canonical state is in affiliate."
+        },
+        "shortDescription": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300,
+          "description": "Short unique description for cards, meta descriptions and directory listings. Null until written."
+        },
+        "pricing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/pricing"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Pricing tiers and free-plan limits. Null only when pricing has not been researched; an empty pricing object is preferred once research starts."
+        },
+        "cons": {
+          "type": "array",
+          "description": "Cons. Tool-specific and human-written. Empty until researched; target at least 3 for published records.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "bestFor": {
+          "$ref": "#/$defs/bestFor"
+        },
+        "skipIf": {
+          "$ref": "#/$defs/skipIf"
+        },
+        "platforms": {
+          "type": "array",
+          "description": "Supported platforms, for example Web, Windows, macOS, iOS, Android, browser extension, API.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "integrations": {
+          "type": "array",
+          "description": "Named integrations or connected services, for example Slack, Zapier, Google Drive.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "useCaseTags": {
+          "type": "array",
+          "description": "Short use-case tags for filtering and related-content joins.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "sources": {
+          "type": "array",
+          "description": "Official sources used to verify this record. Target at least 2 for published records.",
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "lastVerified": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Date the record's facts were last checked. Per-tool, not a site-wide claim."
+        },
+        "affiliate": {
+          "$ref": "#/$defs/affiliate"
+        },
+        "alternatives": {
+          "type": "array",
+          "description": "Ordered alternatives to show on this tool's alternatives page and related links.",
+          "items": {
+            "$ref": "#/$defs/alternative"
+          }
+        },
+        "comparisons": {
+          "type": "array",
+          "description": "Comparison relationships for this tool. Each pair appears once, with a canonical slug and direction.",
+          "items": {
+            "$ref": "#/$defs/comparison"
+          }
+        },
+        "goals": {
+          "type": "array",
+          "description": "Goal mappings used by goal guides, the finder and related links.",
+          "items": {
+            "$ref": "#/$defs/goalMapping"
+          }
+        },
+        "contentStatus": {
+          "$ref": "#/$defs/content",
+          "description": "Content and review status for the tool's review page."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+worker.js
+wrangler.jsonc
+BUILD-AUDIT.txt
+index-before-ai.html
+desktop.ini
+.wrangler/
+.netlify/
+.DS_Store
+Thumbs.db
