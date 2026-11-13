@@ -2235,3 +2235,44 @@ section{scroll-margin-top:82px}
   .card .c-act .btn,.c-act .btn,.rk-act .btn{min-height:44px;display:inline-flex;align-items:center}
   .card .c-act .rlink{min-height:44px;display:inline-flex;align-items:center}
 }
+
+/* --- Diamond Tier UI Upgrade: Glassmorphism & Neon Glows --- */
+.glass-card {
+    background: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+.neon-glow {
+    box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.5);
+    transition: all 0.3s ease-in-out;
+}
+.neon-glow:hover {
+    box-shadow: 0 0 35px 0px rgba(59, 130, 246, 0.8);
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
+
+/* --- Instant Live Search & Filter Bar --- */
+.search-container {
+    position: relative;
+    max-width: 600px;
+    margin: 2rem auto;
+}
+.search-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: rgba(17, 24, 39, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    color: #ffffff;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+.search-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
