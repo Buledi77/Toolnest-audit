@@ -1,3 +1,8 @@
+# Domain migration: old Netlify subdomain -> toolnestai.tech (permanent, path-preserving).
+# Host-specific so it never loops on the new domain. Must stay first (first match wins).
+https://toolnest-ai-hub.netlify.app/* https://toolnestai.tech/:splat 301!
+http://toolnest-ai-hub.netlify.app/* https://toolnestai.tech/:splat 301!
+
 # ToolNest routing - canonical public format is the explicit .html URL.
 # Every duplicate route form (extensionless, directory slash, /index.html) 301s
 # directly to its canonical .html URL. No chains.
